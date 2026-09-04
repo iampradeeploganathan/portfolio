@@ -1,0 +1,1143 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+const metadata = {
+  title: 'Pradeep Loganathan — Data Science Portfolio',
+  description:
+    'Pradeep Loganathan — B.Sc. Physics student from Chennai building practical projects in data science, machine learning, data analysis and civic data.',
+  ignoreTitleTemplate: true,
+};
+---
+
+<Layout metadata={metadata}>
+
+  <!-- =====================================================
+       HERO
+  ====================================================== -->
+
+  <section class="relative overflow-hidden">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 text-center lg:px-8 lg:py-32">
+
+      <div class="mx-auto max-w-4xl">
+
+        <p class="mb-6 text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+          Data Science · Machine Learning · Data Analysis
+        </p>
+
+        <h1 class="text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+          Hi, I'm
+          <span class="text-accent"> Pradeep.</span>
+          <br />
+          I build with data.
+        </h1>
+
+        <p class="mx-auto mt-8 max-w-3xl text-lg leading-8 text-muted sm:text-xl">
+          B.Sc. Physics student from Chennai building practical projects
+          across machine learning, data analysis and real-world problems.
+        </p>
+
+        <p class="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted">
+          I enjoy taking a problem from raw data to analysis, modelling,
+          evaluation and a result that can actually be understood and used.
+        </p>
+
+        <div class="mt-10 flex flex-wrap justify-center gap-4">
+
+          <a
+            href="#projects"
+            class="btn btn-primary"
+          >
+            Explore my projects
+          </a>
+
+          <a
+            href="https://github.com/iampradeeploganathan"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn"
+          >
+            GitHub ↗
+          </a>
+
+          <a
+            href="https://www.linkedin.com/in/pradeep-loganathan-data-scientist"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn"
+          >
+            LinkedIn ↗
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       PROOF / NUMBERS
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+
+      <div class="mb-12 max-w-2xl">
+
+        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+          By the numbers
+        </p>
+
+        <h2 class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+          Work backed by actual data
+        </h2>
+
+        <p class="mt-4 text-muted">
+          A few numbers that represent the scale of the projects I've worked on.
+        </p>
+
+      </div>
+
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+        <div class="rounded-2xl border border-gray-200 p-7 dark:border-gray-700">
+
+          <p class="text-4xl font-bold">
+            6.3M+
+          </p>
+
+          <p class="mt-3 text-muted">
+            Financial transactions analyzed
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border border-gray-200 p-7 dark:border-gray-700">
+
+          <p class="text-4xl font-bold">
+            7,043
+          </p>
+
+          <p class="mt-3 text-muted">
+            Telecom customers analyzed
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border border-gray-200 p-7 dark:border-gray-700">
+
+          <p class="text-4xl font-bold">
+            210
+          </p>
+
+          <p class="mt-3 text-muted">
+            Chennai bus stops audited
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border border-gray-200 p-7 dark:border-gray-700">
+
+          <p class="text-4xl font-bold">
+            78.34%
+          </p>
+
+          <p class="mt-3 text-muted">
+            Churn recall at selected threshold
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       PROJECTS
+  ====================================================== -->
+
+  <section
+    id="projects"
+    class="mx-auto max-w-7xl px-6 py-24 lg:px-8"
+  >
+
+    <div class="max-w-3xl">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        Selected Projects
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Things I've actually built
+      </h2>
+
+      <p class="mt-5 text-lg leading-8 text-muted">
+        Projects covering civic data, machine learning, fraud detection,
+        telecom analytics and real-world problems.
+      </p>
+
+    </div>
+
+
+    <div class="mt-14 grid gap-6 lg:grid-cols-2">
+
+
+      <!-- =================================================
+           PROJECT 01 — DRAINAGE
+      ================================================== -->
+
+      <article
+        class="group flex flex-col rounded-3xl border-2 border-accent/20 p-8 transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-accent/30 lg:p-10"
+      >
+
+        <div class="flex items-center justify-between">
+
+          <span class="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+            Self-Initiated · Civic Data
+          </span>
+
+          <span class="text-2xl font-semibold text-muted">
+            01
+          </span>
+
+        </div>
+
+
+        <div class="mt-8">
+
+          <h3 class="text-2xl font-bold sm:text-3xl">
+            Uneven Drainage Cover
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            A self-initiated civic data project investigating an everyday
+            infrastructure problem through field observation, data
+            collection, analysis and recommendations.
+          </p>
+
+        </div>
+
+
+        <div class="mt-8 grid grid-cols-2 gap-4">
+
+          <div class="rounded-2xl border p-5 dark:border-gray-700">
+
+            <p class="text-xs uppercase tracking-wider text-muted">
+              Type
+            </p>
+
+            <p class="mt-2 text-xl font-bold">
+              Field
+            </p>
+
+            <p class="mt-1 text-sm text-muted">
+              data collection
+            </p>
+
+          </div>
+
+
+          <div class="rounded-2xl border p-5 dark:border-gray-700">
+
+            <p class="text-xs uppercase tracking-wider text-muted">
+              Focus
+            </p>
+
+            <p class="mt-2 text-xl font-bold">
+              Civic
+            </p>
+
+            <p class="mt-1 text-sm text-muted">
+              infrastructure
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="mt-8 flex flex-wrap gap-2">
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            Data Collection
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            Analysis
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            Civic Data
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            Recommendations
+          </span>
+
+        </div>
+
+
+        <div class="mt-auto pt-10">
+
+          <a
+            href="/projects/uneven-drainage-cover"
+            class="inline-flex items-center font-semibold text-accent transition group-hover:gap-2"
+          >
+            View case study
+            <span class="ml-1">→</span>
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <!-- =================================================
+           PROJECT 02 — CHURN
+      ================================================== -->
+
+      <article
+        class="group flex flex-col rounded-3xl border-2 border-accent/20 p-8 transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-accent/30 lg:p-10"
+      >
+
+        <div class="flex items-center justify-between">
+
+          <span class="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+            Machine Learning
+          </span>
+
+          <span class="text-2xl font-semibold text-muted">
+            02
+          </span>
+
+        </div>
+
+
+        <div class="mt-8">
+
+          <h3 class="text-2xl font-bold sm:text-3xl">
+            Customer Churn Prediction
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            A telecom churn prediction workflow covering data preparation,
+            model comparison, threshold optimization, SHAP interpretation
+            and customer risk scoring.
+          </p>
+
+        </div>
+
+
+        <div class="mt-8 grid grid-cols-2 gap-4">
+
+          <div class="rounded-2xl border p-5 dark:border-gray-700">
+
+            <p class="text-xs uppercase tracking-wider text-muted">
+              Customers
+            </p>
+
+            <p class="mt-2 text-xl font-bold">
+              7,043
+            </p>
+
+            <p class="mt-1 text-sm text-muted">
+              records analyzed
+            </p>
+
+          </div>
+
+
+          <div class="rounded-2xl border p-5 dark:border-gray-700">
+
+            <p class="text-xs uppercase tracking-wider text-muted">
+              Final Recall
+            </p>
+
+            <p class="mt-2 text-xl font-bold">
+              78.34%
+            </p>
+
+            <p class="mt-1 text-sm text-muted">
+              threshold 0.30
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="mt-8 flex flex-wrap gap-2">
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            XGBoost
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            SHAP
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            Model Evaluation
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            Threshold Optimization
+          </span>
+
+        </div>
+
+
+        <div class="mt-auto pt-10">
+
+          <a
+            href="/projects/churn-prediction"
+            class="inline-flex items-center font-semibold text-accent transition group-hover:gap-2"
+          >
+            View case study
+            <span class="ml-1">→</span>
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <!-- =================================================
+           PROJECT 03 — FRAUD
+      ================================================== -->
+
+      <article
+        class="group flex flex-col rounded-3xl border border-gray-200 p-8 transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-700 lg:p-10"
+      >
+
+        <div class="flex items-center justify-between">
+
+          <span class="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+            End-to-End ML
+          </span>
+
+          <span class="text-2xl font-semibold text-muted">
+            03
+          </span>
+
+        </div>
+
+
+        <div class="mt-8">
+
+          <h3 class="text-2xl font-bold sm:text-3xl">
+            Fraud Detection System
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            An end-to-end machine learning system built on more than
+            6.3 million financial transactions to identify potentially
+            fraudulent transactions.
+          </p>
+
+        </div>
+
+
+        <div class="mt-8 grid grid-cols-2 gap-4">
+
+          <div class="rounded-2xl border p-5 dark:border-gray-700">
+
+            <p class="text-xs uppercase tracking-wider text-muted">
+              Dataset
+            </p>
+
+            <p class="mt-2 text-xl font-bold">
+              6.3M+
+            </p>
+
+            <p class="mt-1 text-sm text-muted">
+              transactions
+            </p>
+
+          </div>
+
+
+          <div class="rounded-2xl border p-5 dark:border-gray-700">
+
+            <p class="text-xs uppercase tracking-wider text-muted">
+              Approach
+            </p>
+
+            <p class="mt-2 text-xl font-bold">
+              ML
+            </p>
+
+            <p class="mt-1 text-sm text-muted">
+              classification
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="mt-8 flex flex-wrap gap-2">
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            Python
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            XGBoost
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            SHAP
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            FastAPI
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            Streamlit
+          </span>
+
+        </div>
+
+
+        <div class="mt-auto pt-10">
+
+          <a
+            href="/projects/fraud-detection"
+            class="inline-flex items-center font-semibold text-accent transition group-hover:gap-2"
+          >
+            View case study
+            <span class="ml-1">→</span>
+          </a>
+
+        </div>
+
+      </article>
+
+
+
+      <!-- =================================================
+           PROJECT 04 — BUS STOP
+      ================================================== -->
+
+      <article
+        class="group flex flex-col rounded-3xl border border-gray-200 p-8 transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-gray-700 lg:p-10"
+      >
+
+        <div class="flex items-center justify-between">
+
+          <span class="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+            Urban Data
+          </span>
+
+          <span class="text-2xl font-semibold text-muted">
+            04
+          </span>
+
+        </div>
+
+
+        <div class="mt-8">
+
+          <h3 class="text-2xl font-bold sm:text-3xl">
+            Chennai Bus Stop Audit
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            An analysis of Chennai bus-stop audit data focused on pedestrian
+            and wheelchair accessibility around public transport stops.
+          </p>
+
+        </div>
+
+
+        <div class="mt-8 grid grid-cols-2 gap-4">
+
+          <div class="rounded-2xl border p-5 dark:border-gray-700">
+
+            <p class="text-xs uppercase tracking-wider text-muted">
+              Stops
+            </p>
+
+            <p class="mt-2 text-xl font-bold">
+              210
+            </p>
+
+            <p class="mt-1 text-sm text-muted">
+              audited
+            </p>
+
+          </div>
+
+
+          <div class="rounded-2xl border p-5 dark:border-gray-700">
+
+            <p class="text-xs uppercase tracking-wider text-muted">
+              Accessibility
+            </p>
+
+            <p class="mt-2 text-xl font-bold">
+              73.8%
+            </p>
+
+            <p class="mt-1 text-sm text-muted">
+              reported no clear passage
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="mt-8 flex flex-wrap gap-2">
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            Open Data
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            Data Analysis
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            Accessibility
+          </span>
+
+          <span class="rounded-full border px-3 py-1 text-sm">
+            Urban Data
+          </span>
+
+        </div>
+
+
+        <div class="mt-auto pt-10">
+
+          <a
+            href="/projects/chennai-bus-stop-audit"
+            class="inline-flex items-center font-semibold text-accent transition group-hover:gap-2"
+          >
+            View case study
+            <span class="ml-1">→</span>
+          </a>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       MY JOURNEY
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <div class="grid gap-12 lg:grid-cols-3">
+
+        <div>
+
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+            My Journey
+          </p>
+
+          <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+            From Physics to Data Science
+          </h2>
+
+        </div>
+
+
+        <div class="lg:col-span-2">
+
+          <div class="space-y-10">
+
+            <div class="relative border-l border-gray-300 pl-8 dark:border-gray-600">
+
+              <span class="absolute -left-2 top-1 h-4 w-4 rounded-full border-4 border-white bg-accent dark:border-gray-900"></span>
+
+              <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+                2024
+              </p>
+
+              <h3 class="mt-2 text-xl font-bold">
+                Started with Physics
+              </h3>
+
+              <p class="mt-3 leading-7 text-muted">
+                I began my B.Sc. Physics journey at The New College, Chennai.
+                Physics introduced me to observation, measurement, quantitative
+                reasoning and testing assumptions.
+              </p>
+
+            </div>
+
+
+            <div class="relative border-l border-gray-300 pl-8 dark:border-gray-600">
+
+              <span class="absolute -left-2 top-1 h-4 w-4 rounded-full border-4 border-white bg-accent dark:border-gray-900"></span>
+
+              <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+                Data Science
+              </p>
+
+              <h3 class="mt-2 text-xl font-bold">
+                Started building with data
+              </h3>
+
+              <p class="mt-3 leading-7 text-muted">
+                I moved from learning concepts to building projects with
+                Python, Pandas, SQL and machine learning. The focus became
+                solving problems rather than simply completing tutorials.
+              </p>
+
+            </div>
+
+
+            <div class="relative border-l border-gray-300 pl-8 dark:border-gray-600">
+
+              <span class="absolute -left-2 top-1 h-4 w-4 rounded-full border-4 border-white bg-accent dark:border-gray-900"></span>
+
+              <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+                Building
+              </p>
+
+              <h3 class="mt-2 text-xl font-bold">
+                From notebooks to real projects
+              </h3>
+
+              <p class="mt-3 leading-7 text-muted">
+                I worked on large-scale fraud detection, customer churn
+                prediction and model interpretation. I also started applying
+                data analysis to problems outside traditional ML datasets.
+              </p>
+
+            </div>
+
+
+            <div class="relative pl-8">
+
+              <span class="absolute -left-2 top-1 h-4 w-4 rounded-full border-4 border-white bg-accent dark:border-gray-900"></span>
+
+              <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+                Today
+              </p>
+
+              <h3 class="mt-2 text-xl font-bold">
+                Data Science + Real-World Problems
+              </h3>
+
+              <p class="mt-3 leading-7 text-muted">
+                I'm combining machine learning, data analysis and civic data
+                work while looking for an internship where I can contribute
+                to real problems, learn from experienced teams and continue
+                growing as a data professional.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       HOW I APPROACH DATA PROBLEMS
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <div class="grid gap-12 lg:grid-cols-3">
+
+        <div>
+
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+            My approach
+          </p>
+
+          <h2 class="mt-3 text-4xl font-bold tracking-tight">
+            From problem to evidence
+          </h2>
+
+        </div>
+
+
+        <div class="lg:col-span-2">
+
+          <div class="grid gap-5 sm:grid-cols-2">
+
+
+            <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+              <span class="text-sm font-semibold text-accent">
+                01
+              </span>
+
+              <h3 class="mt-4 text-xl font-bold">
+                Understand the problem
+              </h3>
+
+              <p class="mt-3 leading-7 text-muted">
+                Define what needs to be predicted, measured or understood
+                before choosing a modelling approach.
+              </p>
+
+            </div>
+
+
+            <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+              <span class="text-sm font-semibold text-accent">
+                02
+              </span>
+
+              <h3 class="mt-4 text-xl font-bold">
+                Inspect the data
+              </h3>
+
+              <p class="mt-3 leading-7 text-muted">
+                Clean the data, investigate distributions, identify
+                missing values and question assumptions.
+              </p>
+
+            </div>
+
+
+            <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+              <span class="text-sm font-semibold text-accent">
+                03
+              </span>
+
+              <h3 class="mt-4 text-xl font-bold">
+                Build and evaluate
+              </h3>
+
+              <p class="mt-3 leading-7 text-muted">
+                Compare models using metrics that match the actual
+                problem rather than relying on a single score.
+              </p>
+
+            </div>
+
+
+            <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+              <span class="text-sm font-semibold text-accent">
+                04
+              </span>
+
+              <h3 class="mt-4 text-xl font-bold">
+                Explain the result
+              </h3>
+
+              <p class="mt-3 leading-7 text-muted">
+                Turn model outputs into understandable findings,
+                limitations and practical next steps.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       TECHNICAL STACK
+  ====================================================== -->
+
+  <section
+    id="skills"
+    class="mx-auto max-w-7xl px-6 py-24 lg:px-8"
+  >
+
+    <div class="max-w-3xl">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        Technical Stack
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Tools I work with
+      </h2>
+
+      <p class="mt-5 text-lg leading-8 text-muted">
+        A practical stack built around data analysis, machine learning
+        and deploying usable applications.
+      </p>
+
+    </div>
+
+
+    <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+        <h3 class="text-xl font-bold">
+          Python & SQL
+        </h3>
+
+        <p class="mt-3 leading-7 text-muted">
+          Python, SQL, NumPy and Pandas for data processing,
+          transformation and analysis.
+        </p>
+
+      </div>
+
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+        <h3 class="text-xl font-bold">
+          Machine Learning
+        </h3>
+
+        <p class="mt-3 leading-7 text-muted">
+          Scikit-learn, XGBoost, Logistic Regression,
+          Random Forest and tree-based models.
+        </p>
+
+      </div>
+
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+        <h3 class="text-xl font-bold">
+          Data Analysis
+        </h3>
+
+        <p class="mt-3 leading-7 text-muted">
+          Data cleaning, exploratory analysis, feature engineering
+          and visualization.
+        </p>
+
+      </div>
+
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+        <h3 class="text-xl font-bold">
+          Model Evaluation
+        </h3>
+
+        <p class="mt-3 leading-7 text-muted">
+          ROC-AUC, precision, recall, F1, Precision-Recall analysis,
+          threshold optimization and SHAP.
+        </p>
+
+      </div>
+
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+        <h3 class="text-xl font-bold">
+          Deployment
+        </h3>
+
+        <p class="mt-3 leading-7 text-muted">
+          Streamlit, FastAPI, Docker and Joblib for turning
+          models into usable applications.
+        </p>
+
+      </div>
+
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+        <h3 class="text-xl font-bold">
+          Tools
+        </h3>
+
+        <p class="mt-3 leading-7 text-muted">
+          Git, GitHub, Jupyter Notebook, Power BI and Excel.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       ABOUT
+  ====================================================== -->
+
+  <section
+    id="about"
+    class="border-y border-gray-200 dark:border-gray-700"
+  >
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <div class="grid gap-12 lg:grid-cols-3">
+
+        <div>
+
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+            About me
+          </p>
+
+          <h2 class="mt-3 text-4xl font-bold tracking-tight">
+            Physics → Data Science
+          </h2>
+
+        </div>
+
+
+        <div class="lg:col-span-2 space-y-6 text-lg leading-8 text-muted">
+
+          <p>
+            I'm pursuing a B.Sc. Physics at The New College, Chennai
+            (2024–2027).
+          </p>
+
+          <p>
+            Physics trained me to approach problems through observation,
+            measurement, evidence and testing assumptions. I bring the
+            same mindset to data science.
+          </p>
+
+          <p>
+            My projects are focused on learning by building — from
+            large-scale transaction data and predictive modelling to
+            telecom analytics and Chennai's urban infrastructure.
+          </p>
+
+          <p>
+            I'm currently looking for Data Science and Data Analyst
+            internship opportunities where I can contribute to real
+            problems, learn from experienced teams and grow as a
+            data professional.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       PROJECT PHILOSOPHY
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <div class="rounded-3xl border p-8 dark:border-gray-700 lg:p-12">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        What I care about
+      </p>
+
+      <h2 class="mt-4 max-w-4xl text-3xl font-bold tracking-tight sm:text-4xl">
+        A model is useful only when you understand
+        what it is doing and why it matters.
+      </h2>
+
+      <p class="mt-6 max-w-3xl text-lg leading-8 text-muted">
+        That's why my projects don't stop at training a model.
+        I try to understand the data, evaluate the trade-offs,
+        interpret the results and communicate the limitations.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       CONTACT
+  ====================================================== -->
+
+  <section
+    id="contact"
+    class="border-t border-gray-200 dark:border-gray-700"
+  >
+
+    <div class="mx-auto max-w-7xl px-6 py-24 text-center lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        Open to opportunities
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Let's work with data.
+      </h2>
+
+      <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted">
+        I'm currently looking for Data Science and Data Analyst
+        internship opportunities where I can work on real problems
+        and contribute as part of a team.
+      </p>
+
+
+      <div class="mt-10 flex flex-wrap justify-center gap-4">
+
+        <a
+          href="mailto:pradeeploganthan@gmail.com"
+          class="btn btn-primary"
+        >
+          Email me
+        </a>
+
+        <a
+          href="https://www.linkedin.com/in/pradeep-loganathan-data-scientist"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn"
+        >
+          LinkedIn ↗
+        </a>
+
+        <a
+          href="https://github.com/iampradeeploganathan"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn"
+        >
+          GitHub ↗
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</Layout>

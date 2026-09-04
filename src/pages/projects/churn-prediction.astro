@@ -1,0 +1,1243 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+const metadata = {
+  title: 'Customer Churn Prediction — Pradeep Loganathan',
+  description:
+    'Deep dive into Pradeep Loganathan’s telecom customer churn prediction project using XGBoost, threshold optimization, SHAP and customer risk scoring.',
+  ignoreTitleTemplate: true,
+};
+---
+
+<Layout metadata={metadata}>
+
+  <!-- =====================================================
+       HERO
+  ====================================================== -->
+
+  <section class="relative overflow-hidden">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
+
+      <div class="max-w-4xl">
+
+        <a
+          href="/#projects"
+          class="text-sm font-semibold text-accent"
+        >
+          ← Back to projects
+        </a>
+
+        <p class="mt-10 text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+          Deep Dive · Machine Learning
+        </p>
+
+        <h1 class="mt-4 text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+          Customer Churn Prediction
+        </h1>
+
+        <p class="mt-8 max-w-3xl text-xl leading-8 text-muted">
+          Predicting customer churn and turning model probabilities
+          into actionable retention priorities.
+        </p>
+
+        <div class="mt-10 flex flex-wrap gap-4">
+
+          <a
+            href="https://github.com/iampradeeploganathan/churn-prediction"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary"
+          >
+            View GitHub ↗
+          </a>
+          <a
+            href="https://churn-prediction-pradeep.streamlit.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary"
+          >
+            View Live Prediction App ↗
+          </a>
+          <a
+            href="/#projects"
+            class="btn"
+          >
+            ← All Projects
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       PROJECT SNAPSHOT
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">Dataset</p>
+          <p class="mt-2 text-3xl font-bold">7,043</p>
+          <p class="mt-2 text-sm text-muted">customers</p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">Initial Features</p>
+          <p class="mt-2 text-3xl font-bold">33</p>
+          <p class="mt-2 text-sm text-muted">columns</p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">Churn Rate</p>
+          <p class="mt-2 text-3xl font-bold">26.54%</p>
+          <p class="mt-2 text-sm text-muted">of customers</p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">Final Recall</p>
+          <p class="mt-2 text-3xl font-bold">78.34%</p>
+          <p class="mt-2 text-sm text-muted">threshold 0.30</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       01 EXECUTIVE SUMMARY
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      01 · Executive Summary
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      From prediction to prioritization
+    </h2>
+
+    <div class="mt-8 max-w-4xl space-y-6 text-lg leading-8 text-muted">
+
+      <p>
+        I built a telecom customer churn prediction system using
+        the IBM Telco Customer Churn dataset.
+      </p>
+
+      <p>
+        The workflow covered data cleaning, exploratory data analysis,
+        encoding, train/test splitting, model comparison, XGBoost,
+        threshold optimization, SHAP interpretation and customer
+        risk scoring.
+      </p>
+
+      <p>
+        The important part was not simply predicting whether a customer
+        would churn. The model produces a churn probability which is
+        converted into a risk level and a recommended retention action.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       02 SYSTEM WORKFLOW
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        02 · System Workflow
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        How the system works
+      </h2>
+
+      <div class="mt-12 grid gap-5 md:grid-cols-5">
+
+        <div class="rounded-2xl border p-6 dark:border-gray-700">
+          <span class="text-sm font-semibold text-accent">01</span>
+          <h3 class="mt-4 font-bold">Customer Data</h3>
+        </div>
+
+        <div class="rounded-2xl border p-6 dark:border-gray-700">
+          <span class="text-sm font-semibold text-accent">02</span>
+          <h3 class="mt-4 font-bold">Data Cleaning</h3>
+        </div>
+
+        <div class="rounded-2xl border p-6 dark:border-gray-700">
+          <span class="text-sm font-semibold text-accent">03</span>
+          <h3 class="mt-4 font-bold">Model Training</h3>
+        </div>
+
+        <div class="rounded-2xl border p-6 dark:border-gray-700">
+          <span class="text-sm font-semibold text-accent">04</span>
+          <h3 class="mt-4 font-bold">Threshold Optimization</h3>
+        </div>
+
+        <div class="rounded-2xl border p-6 dark:border-gray-700">
+          <span class="text-sm font-semibold text-accent">05</span>
+          <h3 class="mt-4 font-bold">Risk Classification</h3>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       03 DATASET
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      03 · Dataset
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      Understanding the data
+    </h2>
+
+    <p class="mt-6 max-w-3xl text-lg leading-8 text-muted">
+      The project uses the IBM Telco Customer Churn dataset with
+      7,043 customers and 33 initial columns.
+    </p>
+
+    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+        <p class="text-sm text-muted">Target</p>
+        <p class="mt-2 text-xl font-bold">Churn Value</p>
+      </div>
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+        <p class="text-sm text-muted">Stayed</p>
+        <p class="mt-2 text-xl font-bold">5,174</p>
+        <p class="mt-2 text-sm text-muted">customers</p>
+      </div>
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+        <p class="text-sm text-muted">Churned</p>
+        <p class="mt-2 text-xl font-bold">1,869</p>
+        <p class="mt-2 text-sm text-muted">customers</p>
+      </div>
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+        <p class="text-sm text-muted">Churn Rate</p>
+        <p class="mt-2 text-xl font-bold">26.54%</p>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       04 DATA PREPARATION
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        04 · Data Preparation
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Cleaning before modelling
+      </h2>
+
+      <div class="mt-12 grid gap-5 md:grid-cols-2">
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <h3 class="text-xl font-bold">Numeric Conversion</h3>
+          <p class="mt-3 leading-7 text-muted">
+            Total Charges was initially treated as an object/string
+            and converted to numeric.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <h3 class="text-xl font-bold">Categorical Encoding</h3>
+          <p class="mt-3 leading-7 text-muted">
+            Binary variables were encoded as 0/1 and multi-category
+            variables were one-hot encoded.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <h3 class="text-xl font-bold">Scaling</h3>
+          <p class="mt-3 leading-7 text-muted">
+            Numerical features were standardized for Logistic Regression.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <h3 class="text-xl font-bold">Tree Models</h3>
+          <p class="mt-3 leading-7 text-muted">
+            Tree-based models did not require feature scaling.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       05 LEAKAGE CONTROL
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      05 · Leakage Control
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      Features deliberately removed
+    </h2>
+
+    <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+      Some variables were excluded because they were identifiers,
+      redundant, geographic-specific, post-outcome information,
+      or potentially contained information unavailable at prediction time.
+    </p>
+
+    <div class="mt-10 flex flex-wrap gap-3">
+
+      {
+        [
+          'CustomerID',
+          'Count',
+          'Country',
+          'State',
+          'City',
+          'Zip Code',
+          'Lat Long',
+          'Latitude',
+          'Longitude',
+          'Churn Label',
+          'Churn Score',
+          'CLTV',
+          'Churn Reason',
+        ].map((feature) => (
+          <span class="rounded-full border px-4 py-2 text-sm dark:border-gray-700">
+            {feature}
+          </span>
+        ))
+      }
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       06 EDA
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        06 · Exploratory Data Analysis
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        What the data showed
+      </h2>
+
+      <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-accent">Contract</p>
+          <h3 class="mt-2 text-xl font-bold">
+            Month-to-month customers churned more
+          </h3>
+          <div class="mt-5 space-y-2 text-muted">
+            <p>Month-to-month <strong class="text-current">42.71%</strong></p>
+            <p>One year <strong class="text-current">11.27%</strong></p>
+            <p>Two year <strong class="text-current">2.83%</strong></p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-accent">Tenure</p>
+          <h3 class="mt-2 text-xl font-bold">
+            Churned customers had shorter tenure
+          </h3>
+          <div class="mt-5 space-y-2 text-muted">
+            <p>Stayed <strong class="text-current">37.57 months</strong></p>
+            <p>Churned <strong class="text-current">17.98 months</strong></p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-accent">Monthly Charges</p>
+          <h3 class="mt-2 text-xl font-bold">
+            Churned customers paid more monthly
+          </h3>
+          <div class="mt-5 space-y-2 text-muted">
+            <p>Stayed <strong class="text-current">$61.27</strong></p>
+            <p>Churned <strong class="text-current">$74.44</strong></p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-accent">Payment Method</p>
+          <h3 class="mt-2 text-xl font-bold">
+            Electronic check had higher observed churn
+          </h3>
+          <div class="mt-5 space-y-2 text-muted">
+            <p>Electronic check <strong class="text-current">45.29%</strong></p>
+            <p>Mailed check <strong class="text-current">19.11%</strong></p>
+            <p>Bank transfer <strong class="text-current">16.71%</strong></p>
+            <p>Credit card <strong class="text-current">15.24%</strong></p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-accent">Internet Service</p>
+          <h3 class="mt-2 text-xl font-bold">
+            Fiber optic customers had higher observed churn
+          </h3>
+          <div class="mt-5 space-y-2 text-muted">
+            <p>Fiber optic <strong class="text-current">41.89%</strong></p>
+            <p>DSL <strong class="text-current">18.96%</strong></p>
+            <p>No internet <strong class="text-current">7.41%</strong></p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-accent">Technical Support</p>
+          <h3 class="mt-2 text-xl font-bold">
+            Support was associated with lower churn
+          </h3>
+          <div class="mt-5 space-y-2 text-muted">
+            <p>No tech support <strong class="text-current">41.6%</strong></p>
+            <p>Tech support <strong class="text-current">15.2%</strong></p>
+            <p>No internet <strong class="text-current">7.4%</strong></p>
+          </div>
+        </div>
+
+      </div>
+
+      <p class="mt-8 text-sm text-muted">
+        These findings describe observed associations in the dataset;
+        they should not be interpreted as causal relationships.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       07 MODEL COMPARISON
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      07 · Model Comparison
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      Three models, different trade-offs
+    </h2>
+
+    <div class="mt-12 overflow-x-auto">
+
+      <table class="w-full min-w-[720px] border-collapse text-left">
+
+        <thead>
+          <tr class="border-b dark:border-gray-700">
+            <th class="px-4 py-4 font-semibold">Model</th>
+            <th class="px-4 py-4 font-semibold">Accuracy</th>
+            <th class="px-4 py-4 font-semibold">Precision</th>
+            <th class="px-4 py-4 font-semibold">Recall</th>
+            <th class="px-4 py-4 font-semibold">F1</th>
+            <th class="px-4 py-4 font-semibold">ROC-AUC</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr class="border-b dark:border-gray-700">
+            <td class="px-4 py-4 font-semibold">Logistic Regression</td>
+            <td class="px-4 py-4">74.31%</td>
+            <td class="px-4 py-4">51.05%</td>
+            <td class="px-4 py-4">78.07%</td>
+            <td class="px-4 py-4">61.73%</td>
+            <td class="px-4 py-4">84.87%</td>
+          </tr>
+
+          <tr class="border-b dark:border-gray-700">
+            <td class="px-4 py-4 font-semibold">Random Forest</td>
+            <td class="px-4 py-4">79.35%</td>
+            <td class="px-4 py-4">63.70%</td>
+            <td class="px-4 py-4">51.60%</td>
+            <td class="px-4 py-4">57.02%</td>
+            <td class="px-4 py-4">83.33%</td>
+          </tr>
+
+          <tr class="border-b dark:border-gray-700">
+            <td class="px-4 py-4 font-semibold">XGBoost</td>
+            <td class="px-4 py-4">80.62%</td>
+            <td class="px-4 py-4">65.83%</td>
+            <td class="px-4 py-4">56.15%</td>
+            <td class="px-4 py-4">60.61%</td>
+            <td class="px-4 py-4">85.57%</td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <p class="mt-8 max-w-4xl text-lg leading-8 text-muted">
+      XGBoost had the strongest overall initial performance, but Logistic
+      Regression had higher recall at the default threshold. That distinction
+      became important because the project prioritized identifying churners.
+    </p>
+
+  </section>
+
+
+  <!-- =====================================================
+       08 THRESHOLD OPTIMIZATION
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        08 · Threshold Optimization
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Accuracy wasn't enough
+      </h2>
+
+      <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+        A false negative means an actual churner was predicted as someone
+        who would stay. For a retention use case, that means missing an
+        opportunity to intervene.
+      </p>
+
+      <div class="mt-12 grid gap-6 lg:grid-cols-2">
+
+        <div class="rounded-3xl border p-8 dark:border-gray-700">
+
+          <p class="text-sm uppercase tracking-wider text-muted">
+            Default threshold
+          </p>
+
+          <p class="mt-3 text-5xl font-bold">0.50</p>
+
+          <div class="mt-8 grid grid-cols-2 gap-5">
+
+            <div>
+              <p class="text-sm text-muted">Accuracy</p>
+              <p class="mt-1 text-xl font-bold">80.62%</p>
+            </div>
+
+            <div>
+              <p class="text-sm text-muted">Precision</p>
+              <p class="mt-1 text-xl font-bold">65.83%</p>
+            </div>
+
+            <div>
+              <p class="text-sm text-muted">Recall</p>
+              <p class="mt-1 text-xl font-bold">56.15%</p>
+            </div>
+
+            <div>
+              <p class="text-sm text-muted">False Negatives</p>
+              <p class="mt-1 text-xl font-bold">164</p>
+            </div>
+
+          </div>
+
+          <p class="mt-5 text-muted">
+            True Positives: <strong class="text-current">210</strong>
+          </p>
+
+        </div>
+
+
+        <div class="rounded-3xl border-2 border-accent/30 p-8 dark:border-accent/30">
+
+          <p class="text-sm uppercase tracking-wider text-accent">
+            Selected threshold
+          </p>
+
+          <p class="mt-3 text-5xl font-bold">0.30</p>
+
+          <div class="mt-8 grid grid-cols-2 gap-5">
+
+            <div>
+              <p class="text-sm text-muted">Accuracy</p>
+              <p class="mt-1 text-xl font-bold">77.43%</p>
+            </div>
+
+            <div>
+              <p class="text-sm text-muted">Precision</p>
+              <p class="mt-1 text-xl font-bold">54.89%</p>
+            </div>
+
+            <div>
+              <p class="text-sm text-muted">Recall</p>
+              <p class="mt-1 text-xl font-bold">78.34%</p>
+            </div>
+
+            <div>
+              <p class="text-sm text-muted">False Negatives</p>
+              <p class="mt-1 text-xl font-bold">81</p>
+            </div>
+
+          </div>
+
+          <p class="mt-5 text-muted">
+            True Positives: <strong class="text-current">293</strong>
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="mt-10 grid gap-5 sm:grid-cols-3">
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">Recall</p>
+          <p class="mt-2 text-3xl font-bold">+22.19 pp</p>
+          <p class="mt-2 text-sm text-muted">56.15% → 78.34%</p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">False Negatives</p>
+          <p class="mt-2 text-3xl font-bold">164 → 81</p>
+          <p class="mt-2 text-sm text-muted">83 fewer missed churners</p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">Trade-off</p>
+          <p class="mt-2 text-3xl font-bold">FP ↑</p>
+          <p class="mt-2 text-sm text-muted">109 → 241</p>
+        </div>
+
+      </div>
+
+      <p class="mt-8 text-sm text-muted">
+        For this project, 0.30 was selected based on the recall/F1 trade-off
+        and the retention objective. It is not presented as a universally
+        optimal telecom threshold.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       09 CONFUSION MATRIX
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      09 · Confusion Matrix
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      What changed at threshold 0.30?
+    </h2>
+
+    <div class="mt-12 overflow-x-auto">
+
+      <table class="w-full max-w-3xl border-collapse text-center">
+
+        <thead>
+          <tr>
+            <th></th>
+            <th class="px-6 py-4">Actual Stay</th>
+            <th class="px-6 py-4">Actual Churn</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr class="border">
+            <th class="border px-6 py-6 text-left">
+              Predicted Stay
+            </th>
+
+            <td class="border px-6 py-6">
+              <span class="block text-sm text-muted">TN</span>
+              <strong class="text-3xl">794</strong>
+            </td>
+
+            <td class="border px-6 py-6">
+              <span class="block text-sm text-muted">FN</span>
+              <strong class="text-3xl">81</strong>
+            </td>
+          </tr>
+
+          <tr class="border">
+            <th class="border px-6 py-6 text-left">
+              Predicted Churn
+            </th>
+
+            <td class="border px-6 py-6">
+              <span class="block text-sm text-muted">FP</span>
+              <strong class="text-3xl">241</strong>
+            </td>
+
+            <td class="border px-6 py-6">
+              <span class="block text-sm text-muted">TP</span>
+              <strong class="text-3xl">293</strong>
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       10 SHAP
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        10 · Model Interpretation
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        What was the model relying on?
+      </h2>
+
+      <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+        SHAP was used to understand which features were influencing the
+        model's predictions. The values explain model behavior; they do
+        not establish causation.
+      </p>
+
+      <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+
+        {
+          [
+            'Contract_Two year',
+            'Tenure Months',
+            'Dependents',
+            'Contract_One year',
+            'Internet Service_Fiber optic',
+            'Monthly Charges',
+            'Online Security',
+            'Payment Method_Electronic check',
+            'Total Charges',
+            'Paperless Billing',
+          ].map((feature, index) => (
+            <div class="rounded-2xl border p-6 dark:border-gray-700">
+              <span class="text-sm font-semibold text-accent">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+
+              <p class="mt-3 font-semibold">
+                {feature}
+              </p>
+            </div>
+          ))
+        }
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       11 CROSS CHECK
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      11 · Cross-checking the model
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      EDA vs model interpretation
+    </h2>
+
+    <div class="mt-12 overflow-x-auto">
+
+      <table class="w-full min-w-[720px] border-collapse text-left">
+
+        <thead>
+          <tr class="border-b dark:border-gray-700">
+            <th class="px-5 py-4">EDA observation</th>
+            <th class="px-5 py-4">SHAP interpretation</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr class="border-b dark:border-gray-700">
+            <td class="px-5 py-5">
+              Two-year contract churn = 2.83%
+            </td>
+            <td class="px-5 py-5">
+              Contract_Two year strongly pushes predictions toward lower churn.
+            </td>
+          </tr>
+
+          <tr class="border-b dark:border-gray-700">
+            <td class="px-5 py-5">
+              Stayed = 37.57 months average tenure;
+              Churned = 17.98 months
+            </td>
+            <td class="px-5 py-5">
+              Higher tenure generally pushes predictions toward lower churn.
+            </td>
+          </tr>
+
+          <tr class="border-b dark:border-gray-700">
+            <td class="px-5 py-5">
+              Fiber optic churn = 41.89%
+            </td>
+            <td class="px-5 py-5">
+              Fiber optic service pushes predictions toward higher churn.
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       12 CUSTOMER RISK SCORING
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        12 · Customer Risk Scoring
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        From probability to action
+      </h2>
+
+      <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+        Instead of returning only "churn" or "not churn", the system
+        converts predicted probability into a risk category and
+        project-level recommended action.
+      </p>
+
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">Very High</p>
+          <p class="mt-2 text-3xl font-bold">≥ 0.80</p>
+          <p class="mt-4 leading-6">
+            Immediate retention call + Premium discount
+          </p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">High</p>
+          <p class="mt-2 text-3xl font-bold">0.60–0.79</p>
+          <p class="mt-4 leading-6">
+            Retention call + Special offer
+          </p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">Medium</p>
+          <p class="mt-2 text-3xl font-bold">0.40–0.59</p>
+          <p class="mt-4 leading-6">
+            Email campaign
+          </p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">Low</p>
+          <p class="mt-2 text-3xl font-bold">&lt; 0.40</p>
+          <p class="mt-4 leading-6">
+            No action
+          </p>
+        </div>
+
+      </div>
+
+      <p class="mt-8 text-sm text-muted">
+        These are project-level recommendations, not experimentally
+        validated telecom retention strategies.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       13 EXAMPLE PREDICTION
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      13 · Example Prediction
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      What the user actually sees
+    </h2>
+
+    <div class="mt-12 max-w-2xl rounded-3xl border p-8 dark:border-gray-700">
+
+      <p class="text-sm text-muted">Customer</p>
+      <p class="mt-2 text-2xl font-bold">5178-LMXOP</p>
+
+      <div class="mt-8 grid gap-6 sm:grid-cols-2">
+
+        <div>
+          <p class="text-sm text-muted">Churn Probability</p>
+          <p class="mt-2 text-3xl font-bold">93.73%</p>
+        </div>
+
+        <div>
+          <p class="text-sm text-muted">Risk</p>
+          <p class="mt-2 text-3xl font-bold">Very High</p>
+        </div>
+
+      </div>
+
+      <div class="mt-8">
+        <p class="text-sm text-muted">Recommended Action</p>
+        <p class="mt-2 text-lg font-semibold">
+          Immediate retention call + Premium discount
+        </p>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       14 DEPLOYMENT
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        14 · Deployment
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        From model to usable application
+      </h2>
+
+      <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+        The project was designed around turning the trained model into
+        an interactive prediction workflow rather than stopping at
+        notebook-based experimentation.
+      </p>
+
+      <div class="mt-10 rounded-2xl border p-7 dark:border-gray-700">
+
+        <p class="text-sm uppercase tracking-wider text-muted">
+          Deployment status
+        </p>
+
+        <p class="mt-2 text-xl font-bold">
+          Interactive prediction workflow
+        </p>
+
+        <p class="mt-3 leading-7 text-muted">
+          The model workflow includes customer input, probability
+          prediction, risk classification and a recommended action.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       15 LIMITATIONS
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      15 · Limitations
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      What this project does not claim
+    </h2>
+
+    <div class="mt-10 grid gap-4 md:grid-cols-2">
+
+      <div class="rounded-2xl border p-6 dark:border-gray-700">
+        Public telecom dataset rather than live company data.
+      </div>
+
+      <div class="rounded-2xl border p-6 dark:border-gray-700">
+        No measured revenue savings or actual churn reduction.
+      </div>
+
+      <div class="rounded-2xl border p-6 dark:border-gray-700">
+        Threshold was not selected using actual company retention costs.
+      </div>
+
+      <div class="rounded-2xl border p-6 dark:border-gray-700">
+        No temporal validation strategy was used.
+      </div>
+
+      <div class="rounded-2xl border p-6 dark:border-gray-700">
+        Model associations do not establish causal relationships.
+      </div>
+
+      <div class="rounded-2xl border p-6 dark:border-gray-700">
+        Real production use would require richer historical and behavioral data.
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       16 NEXT ITERATION
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        16 · Next Iteration
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        What I would improve
+      </h2>
+
+      <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+        {
+          [
+            'Leakage-safe end-to-end preprocessing pipeline',
+            'Temporal validation using historical customer snapshots',
+            'Customer support and complaint history',
+            'Billing and payment failure history',
+            'Plan-change and usage history',
+            'Probability calibration',
+            'Business-cost-based threshold selection',
+            'Retention campaign ROI measurement',
+            'Controlled experiments to measure intervention effectiveness',
+          ].map((item) => (
+            <div class="rounded-2xl border p-6 dark:border-gray-700">
+              {item}
+            </div>
+          ))
+        }
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       17 WHAT I LEARNED
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      17 · What I learned
+    </p>
+
+    <h2 class="mt-3 max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl">
+      A classification model isn't finished when it's trained.
+    </h2>
+
+    <p class="mt-8 max-w-4xl text-lg leading-8 text-muted">
+      The project forced me to think beyond model accuracy: understand
+      the business problem, identify leakage, compare models, evaluate
+      false positives and false negatives, optimize the decision threshold,
+      interpret model behavior, and convert predictions into a practical
+      prioritization workflow.
+    </p>
+
+  </section>
+
+
+  <!-- =====================================================
+       18 EXPLAIN IT IN 60 SECONDS
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        18 · Explain it in 60 seconds
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        The project in one minute
+      </h2>
+
+      <div class="mt-8 max-w-4xl space-y-6 text-lg leading-8 text-muted">
+
+        <p>
+          Basically, I built a telecom customer churn prediction system
+          to identify customers who are likely to leave the company.
+          I used the IBM Telco Customer Churn dataset with 7,043 customers
+          and 33 columns initially.
+        </p>
+
+        <p>
+          I cleaned the data, removed identifiers and columns that could
+          cause leakage, encoded the categorical variables, and split the
+          data into 80% training and 20% testing using stratification.
+        </p>
+
+        <p>
+          I compared Logistic Regression, Random Forest and XGBoost.
+          XGBoost performed best initially with 80.62% accuracy and
+          85.57% ROC-AUC.
+        </p>
+
+        <p>
+          But accuracy wasn't the main business objective. At the default
+          0.50 threshold, the model was missing 164 actual churners.
+        </p>
+
+        <p>
+          So I tested different probability thresholds and selected 0.30
+          for this project. That increased recall from 56.15% to 78.34%
+          and reduced false negatives from 164 to 81, although false
+          positives increased.
+        </p>
+
+        <p>
+          Then I used SHAP to understand what the model was relying on.
+          Contract type, tenure, dependents and fiber-optic service were
+          among the most influential features.
+        </p>
+
+        <p>
+          Finally, I converted churn probabilities into risk levels and
+          recommended retention actions, so the output wasn't just
+          "churn" or "not churn" but a prioritized customer-risk workflow.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       CTA
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <div class="rounded-3xl border p-8 dark:border-gray-700 lg:p-12">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        Project Links
+      </p>
+
+      <h2 class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+        Explore the project
+      </h2>
+
+      <p class="mt-5 max-w-2xl text-lg leading-8 text-muted">
+        Explore the project repository or return to the complete
+        portfolio to see the other projects.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-4">
+
+        <a
+          href="https://github.com/iampradeeploganathan"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary"
+        >
+          GitHub ↗
+        </a>
+
+        <a
+          href="/#projects"
+          class="btn"
+        >
+          ← All Projects
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</Layout>
