@@ -1,0 +1,1816 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+const metadata = {
+  title: 'Fraud Detection System — Pradeep Loganathan',
+  description:
+    'Deep dive into an end-to-end fraud detection system using XGBoost, feature engineering, threshold optimization, SHAP, FastAPI and Streamlit.',
+  ignoreTitleTemplate: true,
+};
+
+const datasetTransactions = '6.3M+';
+const fraudTransactions = '8,213';
+const fraudRate = '0.1291%';
+const threshold = '0.9905';
+
+const features = [
+  'type',
+  'amount',
+  'log_amount',
+  'is_high_amount',
+  'hour',
+  'is_night',
+  'orig_balance_diff',
+  'dest_balance_diff',
+  'orig_error',
+  'dest_error',
+  'amount_to_balance_ratio',
+];
+
+const featureDescriptions = [
+  {
+    name: 'type',
+    description: 'Transaction type represented numerically.',
+  },
+  {
+    name: 'amount',
+    description: 'Original transaction amount.',
+  },
+  {
+    name: 'log_amount',
+    description: 'Log-transformed transaction amount.',
+  },
+  {
+    name: 'is_high_amount',
+    description: 'Indicator for transactions above ₹200,000 in the application workflow.',
+  },
+  {
+    name: 'hour',
+    description: 'Transaction hour derived from the time information.',
+  },
+  {
+    name: 'is_night',
+    description: 'Indicator for transactions between 22:00 and 05:00.',
+  },
+  {
+    name: 'orig_balance_diff',
+    description: 'Difference between the origin account balance before and after the transaction.',
+  },
+  {
+    name: 'dest_balance_diff',
+    description: 'Difference between the destination account balance before and after the transaction.',
+  },
+  {
+    name: 'orig_error',
+    description: 'Difference between expected and observed origin-account balance movement.',
+  },
+  {
+    name: 'dest_error',
+    description: 'Difference between expected and observed destination-account balance movement.',
+  },
+  {
+    name: 'amount_to_balance_ratio',
+    description: 'Transaction amount relative to the origin account balance.',
+  },
+];
+
+const models = [
+  {
+    name: 'Logistic Regression',
+    role: 'Baseline',
+    description:
+      'A linear classification baseline using balanced class weights.',
+  },
+  {
+    name: 'Random Forest',
+    role: 'Tree ensemble',
+    description:
+      'A constrained tree ensemble designed to capture nonlinear relationships.',
+  },
+  {
+    name: 'XGBoost',
+    role: 'Selected model',
+    description:
+      'The final model selected for the saved production artifact.',
+  },
+];
+
+const workflow = [
+  'Load transaction data',
+  'Explore class imbalance and transaction behaviour',
+  'Engineer transaction and time-based features',
+  'Remove target and flagged-fraud columns from X',
+  'Split data using stratification',
+  'Scale numerical features with RobustScaler',
+  'Train Logistic Regression, Random Forest and XGBoost',
+  'Compare models using ROC-AUC and Average Precision',
+  'Tune the fraud probability threshold',
+  'Interpret the model with SHAP',
+  'Tune XGBoost hyperparameters',
+  'Validate using stratified cross-validation',
+  'Save the complete model artifact',
+  'Expose prediction through Streamlit and FastAPI',
+];
+
+const limitations = [
+  'The model was developed on a historical dataset rather than a live banking environment.',
+  'The decision threshold is optimized from the available test predictions and is not tied to an institution-specific fraud-loss cost matrix.',
+  'The project demonstrates a deployable prediction workflow but does not establish production-level monitoring or drift detection.',
+  'SHAP explains model behaviour but does not establish causal relationships.',
+  'A real financial institution would require additional controls, governance, monitoring and validation before deployment.',
+];
+
+const improvements = [
+  'Time-aware validation instead of a random train-test split',
+  'Probability calibration',
+  'Cost-sensitive threshold selection',
+  'Model monitoring and data-drift detection',
+  'Fraud analyst feedback loops',
+  'Real-time feature pipelines',
+  'Transaction velocity and behavioural features',
+  'Model versioning and experiment tracking',
+  'Production monitoring for false positives and false negatives',
+];
+---
+
+<Layout metadata={metadata}>
+
+  <!-- =====================================================
+       HERO
+  ====================================================== -->
+
+  <section class="relative overflow-hidden">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
+
+      <div class="max-w-5xl">
+
+        <a
+          href="/#projects"
+          class="text-sm font-semibold text-accent transition-opacity hover:opacity-70"
+        >
+          ← Back to projects
+        </a>
+
+        <p class="mt-10 text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+          Deep Dive · End-to-End Machine Learning
+        </p>
+
+        <h1 class="mt-4 text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+          Fraud Detection System
+        </h1>
+
+        <p class="mt-8 max-w-4xl text-xl leading-8 text-muted">
+          An end-to-end machine learning system built on more than 6.3 million
+          financial transactions to identify potentially fraudulent activity.
+        </p>
+
+        <div class="mt-10 flex flex-wrap gap-4">
+
+          <a
+            href="https://github.com/iampradeeploganathan/fraud-detection-system"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary"
+          >
+            View GitHub ↗
+          </a>
+
+          <a
+            href="https://fraud-detection-pradeep.streamlit.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary"
+          >
+            View Live App ↗
+          </a>
+
+          <a
+            href="/#projects"
+            class="btn"
+          >
+            ← All Projects
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       PROJECT SNAPSHOT
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">Dataset</p>
+          <p class="mt-2 text-3xl font-bold">{datasetTransactions}</p>
+          <p class="mt-2 text-sm text-muted">transactions</p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">Fraud cases</p>
+          <p class="mt-2 text-3xl font-bold">{fraudTransactions}</p>
+          <p class="mt-2 text-sm text-muted">identified records</p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <p class="text-sm text-muted">Fraud rate</p>
+          <p class="mt-2 text-3xl font-bold">{fraudRate}</p>
+          <p class="mt-2 text-sm text-muted">highly imbalanced target</p>
+        </div>
+
+        <div class="rounded-2xl border-2 border-accent/30 p-7 dark:border-accent/30">
+          <p class="text-sm text-accent">Saved threshold</p>
+          <p class="mt-2 text-3xl font-bold">{threshold}</p>
+          <p class="mt-2 text-sm text-muted">fraud decision threshold</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       01 EXECUTIVE SUMMARY
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      01 · Executive Summary
+    </p>
+
+    <h2 class="mt-3 max-w-5xl text-4xl font-bold tracking-tight sm:text-5xl">
+      Fraud detection is a decision problem, not just a classification problem.
+    </h2>
+
+    <div class="mt-8 max-w-4xl space-y-6 text-lg leading-8 text-muted">
+
+      <p>
+        I built an end-to-end fraud detection system using a large financial
+        transaction dataset containing more than 6.3 million records.
+      </p>
+
+      <p>
+        The project covered exploratory data analysis, class-imbalance
+        investigation, feature engineering, model comparison, XGBoost
+        training, threshold optimization, SHAP explainability and model
+        deployment.
+      </p>
+
+      <p>
+        The final model artifact contains the trained XGBoost model, the
+        selected decision threshold, the exact feature list and the fitted
+        RobustScaler used during preprocessing.
+      </p>
+
+      <p>
+        The prediction workflow was then exposed through both a Streamlit
+        application and a FastAPI endpoint.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       02 THE PROBLEM
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        02 · Problem Definition
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Why fraud detection is difficult
+      </h2>
+
+      <div class="mt-12 grid gap-5 md:grid-cols-3">
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <span class="text-sm font-semibold text-accent">01</span>
+
+          <h3 class="mt-4 text-xl font-bold">
+            Severe class imbalance
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            Fraud represents only a very small proportion of the available
+            transactions. A model can therefore achieve strong-looking
+            overall performance while still missing important fraud cases.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <span class="text-sm font-semibold text-accent">02</span>
+
+          <h3 class="mt-4 text-xl font-bold">
+            False negatives matter
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            A missed fraudulent transaction can be more costly than simply
+            getting a large number of legitimate transactions correct.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <span class="text-sm font-semibold text-accent">03</span>
+
+          <h3 class="mt-4 text-xl font-bold">
+            Probability needs a decision rule
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            The model produces a probability. The system still needs a
+            threshold that determines when that probability becomes a fraud
+            decision.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       03 DATASET
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      03 · Dataset
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      Working with a highly imbalanced transaction dataset
+    </h2>
+
+    <div class="mt-8 max-w-4xl space-y-6 text-lg leading-8 text-muted">
+
+      <p>
+        The project uses more than 6.3 million financial transaction records.
+        The target variable is <strong class="text-current">isFraud</strong>.
+      </p>
+
+      <p>
+        The dataset contains transaction information, transaction amount,
+        account balances and timing information. Exploratory analysis was
+        used to understand transaction behaviour before modelling.
+      </p>
+
+    </div>
+
+    <div class="mt-12 grid gap-5 sm:grid-cols-3">
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+        <p class="text-sm text-muted">Total transactions</p>
+        <p class="mt-2 text-4xl font-bold">{datasetTransactions}</p>
+      </div>
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+        <p class="text-sm text-muted">Fraud transactions</p>
+        <p class="mt-2 text-4xl font-bold">{fraudTransactions}</p>
+      </div>
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+        <p class="text-sm text-muted">Fraud rate</p>
+        <p class="mt-2 text-4xl font-bold">{fraudRate}</p>
+      </div>
+
+    </div>
+
+    <div class="mt-10 rounded-2xl border border-accent/30 p-7 dark:border-accent/30">
+
+      <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+        Key modelling implication
+      </p>
+
+      <p class="mt-4 max-w-4xl text-lg leading-8">
+        Because fraud is rare, accuracy alone is not an adequate way to judge
+        whether the model is useful. The project therefore compares
+        probability-based metrics and explicitly evaluates the decision
+        threshold.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       04 EXPLORATORY ANALYSIS
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        04 · Exploratory Data Analysis
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Understanding transaction behaviour before modelling
+      </h2>
+
+      <div class="mt-12 grid gap-5 md:grid-cols-2">
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Amount analysis
+          </p>
+
+          <h3 class="mt-3 text-xl font-bold">
+            Transaction amount distribution
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            Transaction amounts were examined and a logarithmic transformation
+            was introduced to reduce the effect of the strongly skewed amount
+            distribution.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Transaction type
+          </p>
+
+          <h3 class="mt-3 text-xl font-bold">
+            Fraud behaviour by transaction type
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            Transaction type was investigated as a potential source of
+            discriminatory information and retained as a model feature.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Time behaviour
+          </p>
+
+          <h3 class="mt-3 text-xl font-bold">
+            Hour and day/night patterns
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            Transaction timing was analysed and converted into hour and
+            day/night features for the modelling workflow.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Relationships
+          </p>
+
+          <h3 class="mt-3 text-xl font-bold">
+            Correlation analysis
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            Correlation analysis was used to understand relationships between
+            numerical variables before the final feature matrix was created.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       05 FEATURE ENGINEERING
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      05 · Feature Engineering
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      Turning raw transaction fields into modelling signals
+    </h2>
+
+    <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+      Instead of relying only on raw balances and transaction amount, I
+      engineered features representing transaction scale, timing, balance
+      movement and accounting consistency.
+    </p>
+
+    <div class="mt-12 overflow-x-auto">
+
+      <table class="w-full min-w-[760px] border-collapse text-left">
+
+        <thead>
+
+          <tr class="border-b border-gray-200 dark:border-gray-700">
+
+            <th class="px-5 py-4 font-semibold">
+              Feature
+            </th>
+
+            <th class="px-5 py-4 font-semibold">
+              Purpose
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          {featureDescriptions.map((feature) => (
+
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+
+              <td class="px-5 py-5 font-semibold">
+                {feature.name}
+              </td>
+
+              <td class="px-5 py-5 text-muted">
+                {feature.description}
+              </td>
+
+            </tr>
+
+          ))}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       06 PREPROCESSING
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        06 · Preprocessing
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Building a consistent modelling matrix
+      </h2>
+
+      <div class="mt-12 grid gap-5 md:grid-cols-4">
+
+        <div class="rounded-2xl border p-6 dark:border-gray-700">
+
+          <span class="text-sm font-semibold text-accent">
+            01
+          </span>
+
+          <h3 class="mt-4 font-bold">
+            Target separation
+          </h3>
+
+          <p class="mt-3 text-sm leading-6 text-muted">
+            isFraud was separated as the target.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-6 dark:border-gray-700">
+
+          <span class="text-sm font-semibold text-accent">
+            02
+          </span>
+
+          <h3 class="mt-4 font-bold">
+            Flag exclusion
+          </h3>
+
+          <p class="mt-3 text-sm leading-6 text-muted">
+            isFlaggedFraud was removed from the feature matrix.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-6 dark:border-gray-700">
+
+          <span class="text-sm font-semibold text-accent">
+            03
+          </span>
+
+          <h3 class="mt-4 font-bold">
+            Stratified split
+          </h3>
+
+          <p class="mt-3 text-sm leading-6 text-muted">
+            The train-test split preserved the class distribution.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-6 dark:border-gray-700">
+
+          <span class="text-sm font-semibold text-accent">
+            04
+          </span>
+
+          <h3 class="mt-4 font-bold">
+            Robust scaling
+          </h3>
+
+          <p class="mt-3 text-sm leading-6 text-muted">
+            RobustScaler was fitted on the training features and reused for
+            test data and deployment.
+          </p>
+
+        </div>
+
+      </div>
+
+      <div class="mt-10 rounded-2xl border p-7 dark:border-gray-700">
+
+        <p class="text-sm uppercase tracking-wider text-muted">
+          Final feature count
+        </p>
+
+        <p class="mt-2 text-4xl font-bold">
+          {features.length}
+        </p>
+
+        <div class="mt-6 flex flex-wrap gap-2">
+
+          {features.map((feature) => (
+
+            <span class="rounded-full border px-3 py-1.5 text-sm dark:border-gray-700">
+              {feature}
+            </span>
+
+          ))}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       07 MODEL COMPARISON
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      07 · Model Comparison
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      Comparing different modelling strategies
+    </h2>
+
+    <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+      Three classification approaches were trained: Logistic Regression,
+      Random Forest and XGBoost. Because of the severe class imbalance,
+      Average Precision and ROC-AUC were used alongside classification
+      metrics rather than relying only on accuracy.
+    </p>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+
+      {models.map((model, index) => (
+
+        <div
+          class={`rounded-2xl border p-7 ${
+            index === 2
+              ? 'border-2 border-accent/30 dark:border-accent/30'
+              : 'dark:border-gray-700'
+          }`}
+        >
+
+          <span class="text-sm font-semibold text-accent">
+            0{index + 1}
+          </span>
+
+          <p class="mt-4 text-sm text-muted">
+            {model.role}
+          </p>
+
+          <h3 class="mt-2 text-2xl font-bold">
+            {model.name}
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            {model.description}
+          </p>
+
+        </div>
+
+      ))}
+
+    </div>
+
+    <div class="mt-10 rounded-2xl border border-accent/30 p-7 dark:border-accent/30">
+
+      <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+        Model selection
+      </p>
+
+      <p class="mt-3 text-lg leading-8">
+        XGBoost was selected as the final model based on the project’s
+        evaluation workflow and was stored as the model in the final
+        deployment artifact.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       08 XGBOOST
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        08 · XGBoost
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        The final model
+      </h2>
+
+      <div class="mt-10 grid gap-5 md:grid-cols-2">
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Model family
+          </p>
+
+          <p class="mt-2 text-3xl font-bold">
+            XGBoost
+          </p>
+
+          <p class="mt-4 leading-7 text-muted">
+            Gradient-boosted decision trees were used to capture nonlinear
+            relationships in the engineered transaction features.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Objective
+          </p>
+
+          <p class="mt-2 text-3xl font-bold">
+            Binary classification
+          </p>
+
+          <p class="mt-4 leading-7 text-muted">
+            The model estimates the probability that a transaction belongs
+            to the fraud class.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Class imbalance
+          </p>
+
+          <p class="mt-2 text-3xl font-bold">
+            scale_pos_weight
+          </p>
+
+          <p class="mt-4 leading-7 text-muted">
+            The training workflow used the ratio of negative to positive
+            training examples to compensate for the imbalanced target.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Tree construction
+          </p>
+
+          <p class="mt-2 text-3xl font-bold">
+            hist
+          </p>
+
+          <p class="mt-4 leading-7 text-muted">
+            The histogram tree method was used for computational efficiency
+            on the large transaction dataset.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       09 THRESHOLD OPTIMIZATION
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      09 · Threshold Optimization
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      Probability is not the final decision
+    </h2>
+
+    <div class="mt-8 max-w-4xl space-y-6 text-lg leading-8 text-muted">
+
+      <p>
+        XGBoost produces a probability for the fraud class. The project then
+        evaluates the precision-recall relationship across possible
+        probability thresholds.
+      </p>
+
+      <p>
+        The notebook searches for candidate thresholds that achieve a recall
+        of at least 99% and selects the candidate with the highest precision.
+      </p>
+
+    </div>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-2">
+
+      <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+        <p class="text-sm uppercase tracking-wider text-muted">
+          Decision logic
+        </p>
+
+        <div class="mt-5 rounded-xl border p-6 dark:border-gray-700">
+
+          <p class="font-mono text-sm">
+            fraud_probability ≥ threshold
+          </p>
+
+          <p class="mt-4 text-muted">
+            → Fraud
+          </p>
+
+          <p class="mt-2 text-muted">
+            → Legitimate otherwise
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="rounded-2xl border-2 border-accent/30 p-8 dark:border-accent/30">
+
+        <p class="text-sm uppercase tracking-wider text-accent">
+          Saved decision threshold
+        </p>
+
+        <p class="mt-3 text-6xl font-bold">
+          {threshold}
+        </p>
+
+        <p class="mt-5 leading-7 text-muted">
+          This threshold is stored together with the trained model and
+          preprocessing objects in the final artifact.
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="mt-10 rounded-2xl border p-7 dark:border-gray-700">
+
+      <p class="text-sm font-semibold uppercase tracking-wider text-muted">
+        Why this matters
+      </p>
+
+      <p class="mt-4 max-w-4xl text-lg leading-8">
+        Changing the threshold changes the balance between false positives and
+        false negatives. For fraud detection, this makes threshold selection
+        a business decision as well as a modelling decision.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       10 CONFUSION MATRIX
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        10 · Threshold-Based Evaluation
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Evaluating the actual fraud decisions
+      </h2>
+
+      <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+        After selecting the threshold, the project converts predicted
+        probabilities into binary fraud decisions and evaluates them using a
+        classification report and confusion matrix.
+      </p>
+
+      <div class="mt-12 grid gap-5 md:grid-cols-2">
+
+        <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            True Negative
+          </p>
+
+          <h3 class="mt-2 text-2xl font-bold">
+            Legitimate → Legitimate
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            A legitimate transaction correctly remains outside the fraud class.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            False Positive
+          </p>
+
+          <h3 class="mt-2 text-2xl font-bold">
+            Legitimate → Fraud
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            A legitimate transaction is flagged and may require unnecessary
+            review.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            False Negative
+          </p>
+
+          <h3 class="mt-2 text-2xl font-bold">
+            Fraud → Legitimate
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            A fraudulent transaction is missed. This is particularly important
+            in a fraud-detection setting.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border-2 border-accent/30 p-8 dark:border-accent/30">
+
+          <p class="text-sm text-accent">
+            True Positive
+          </p>
+
+          <h3 class="mt-2 text-2xl font-bold">
+            Fraud → Fraud
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            A fraudulent transaction is correctly identified by the system.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       11 SHAP
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      11 · Model Explainability
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      What was the model relying on?
+    </h2>
+
+    <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+      SHAP was used after model training to inspect how the XGBoost model
+      behaves across a sample of test observations.
+    </p>
+
+    <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+      {features.map((feature, index) => (
+
+        <div class="rounded-2xl border p-6 dark:border-gray-700">
+
+          <span class="text-sm font-semibold text-accent">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+
+          <p class="mt-3 font-mono text-sm font-semibold">
+            {feature}
+          </p>
+
+        </div>
+
+      ))}
+
+    </div>
+
+    <div class="mt-10 rounded-2xl border border-accent/30 p-7 dark:border-accent/30">
+
+      <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+        Interpretation principle
+      </p>
+
+      <p class="mt-4 max-w-4xl text-lg leading-8">
+        SHAP is used here to explain the model's learned behaviour. A feature
+        influencing the prediction does not mean that the feature causes
+        fraud.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       12 HYPERPARAMETER TUNING
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        12 · Model Tuning
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Refining the model after the first evaluation
+      </h2>
+
+      <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+        After the initial model comparison, the notebook trained tuned
+        versions of XGBoost, Random Forest and Logistic Regression.
+      </p>
+
+      <div class="mt-12 grid gap-5 md:grid-cols-3">
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            XGBoost
+          </p>
+
+          <p class="mt-3 text-2xl font-bold">
+            200 estimators
+          </p>
+
+          <p class="mt-3 text-muted">
+            max_depth = 4
+          </p>
+
+          <p class="mt-2 text-muted">
+            learning_rate = 0.05
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Random Forest
+          </p>
+
+          <p class="mt-3 text-2xl font-bold">
+            100 estimators
+          </p>
+
+          <p class="mt-3 text-muted">
+            max_depth = 10
+          </p>
+
+          <p class="mt-2 text-muted">
+            min_samples_leaf = 200
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Logistic Regression
+          </p>
+
+          <p class="mt-3 text-2xl font-bold">
+            Balanced baseline
+          </p>
+
+          <p class="mt-3 text-muted">
+            max_iter = 300
+          </p>
+
+          <p class="mt-2 text-muted">
+            solver = lbfgs
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       13 CROSS VALIDATION
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      13 · Cross Validation
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      Checking performance beyond one split
+    </h2>
+
+    <div class="mt-8 max-w-4xl space-y-6 text-lg leading-8 text-muted">
+
+      <p>
+        The tuned XGBoost model was evaluated using StratifiedKFold with
+        five folds.
+      </p>
+
+      <p>
+        Average Precision was used as the cross-validation scoring metric,
+        which is appropriate for the project's highly imbalanced fraud target.
+      </p>
+
+    </div>
+
+    <div class="mt-12 grid gap-5 sm:grid-cols-3">
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+        <p class="text-sm text-muted">
+          Strategy
+        </p>
+
+        <p class="mt-2 text-3xl font-bold">
+          StratifiedKFold
+        </p>
+
+      </div>
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+        <p class="text-sm text-muted">
+          Folds
+        </p>
+
+        <p class="mt-2 text-3xl font-bold">
+          5
+        </p>
+
+      </div>
+
+      <div class="rounded-2xl border-2 border-accent/30 p-7 dark:border-accent/30">
+
+        <p class="text-sm text-accent">
+          Scoring
+        </p>
+
+        <p class="mt-2 text-3xl font-bold">
+          Average Precision
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       14 MODEL ARTIFACT
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        14 · Model Artifact
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Saving more than just the model
+      </h2>
+
+      <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+        The final deployment artifact stores the objects required to reproduce
+        the prediction workflow consistently.
+      </p>
+
+      <div class="mt-12 grid gap-4 md:grid-cols-2">
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <span class="text-sm font-semibold text-accent">01</span>
+          <h3 class="mt-3 font-bold">model_name</h3>
+          <p class="mt-2 text-muted">
+            Identifies the selected model.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <span class="text-sm font-semibold text-accent">02</span>
+          <h3 class="mt-3 font-bold">model</h3>
+          <p class="mt-2 text-muted">
+            Stores the trained XGBoost estimator.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <span class="text-sm font-semibold text-accent">03</span>
+          <h3 class="mt-3 font-bold">threshold</h3>
+          <p class="mt-2 text-muted">
+            Stores the selected fraud decision threshold.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <span class="text-sm font-semibold text-accent">04</span>
+          <h3 class="mt-3 font-bold">features</h3>
+          <p class="mt-2 text-muted">
+            Stores the exact feature order expected by the model.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+          <span class="text-sm font-semibold text-accent">05</span>
+          <h3 class="mt-3 font-bold">scaler</h3>
+          <p class="mt-2 text-muted">
+            Stores the fitted RobustScaler used during preprocessing.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="mt-10 rounded-2xl border border-accent/30 p-7 dark:border-accent/30">
+
+        <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+          Why this architecture matters
+        </p>
+
+        <p class="mt-4 max-w-4xl text-lg leading-8">
+          The deployment application does not retrain the model. It loads the
+          saved artifact, recreates the expected feature structure, applies
+          the stored scaler and then uses the stored threshold for the final
+          decision.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       15 DEPLOYMENT
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      15 · Deployment
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      From notebook to usable application
+    </h2>
+
+    <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+      The project was taken beyond model training and connected to two
+      application interfaces: a Streamlit interface for interactive use and
+      a FastAPI endpoint for programmatic prediction.
+    </p>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-2">
+
+      <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+        <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+          Streamlit
+        </p>
+
+        <h3 class="mt-3 text-2xl font-bold">
+          Interactive prediction interface
+        </h3>
+
+        <p class="mt-4 leading-7 text-muted">
+          Users provide transaction type, amount, transaction hour and origin
+          and destination balance information. The application engineers the
+          same features expected by the model and displays the fraud
+          probability and final decision.
+        </p>
+
+        <a
+          href="https://fraud-detection-pradeep.streamlit.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-6 inline-block font-semibold text-accent"
+        >
+          Open live application ↗
+        </a>
+
+      </div>
+
+
+      <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+        <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+          FastAPI
+        </p>
+
+        <h3 class="mt-3 text-2xl font-bold">
+          Prediction API
+        </h3>
+
+        <p class="mt-4 leading-7 text-muted">
+          The API accepts the engineered transaction features, enforces the
+          stored feature order, applies the saved scaler and returns the fraud
+          probability, threshold, prediction and label.
+        </p>
+
+        <div class="mt-6 rounded-xl border p-5 dark:border-gray-700">
+
+          <p class="font-mono text-sm text-muted">
+            POST /predict
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       16 END-TO-END WORKFLOW
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        16 · End-to-End Workflow
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        The complete pipeline
+      </h2>
+
+      <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+        {workflow.map((step, index) => (
+
+          <div class="rounded-2xl border p-6 dark:border-gray-700">
+
+            <span class="text-sm font-semibold text-accent">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+
+            <p class="mt-4 font-semibold leading-6">
+              {step}
+            </p>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       17 WHAT I LEARNED
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      17 · What I Learned
+    </p>
+
+    <h2 class="mt-3 max-w-5xl text-4xl font-bold tracking-tight sm:text-5xl">
+      A fraud model is not finished when training ends.
+    </h2>
+
+    <div class="mt-8 max-w-4xl space-y-6 text-lg leading-8 text-muted">
+
+      <p>
+        The project taught me that an imbalanced classification problem needs
+        more careful evaluation than simply looking at accuracy.
+      </p>
+
+      <p>
+        I learned to treat feature engineering, probability thresholds,
+        false-positive and false-negative trade-offs, model interpretation
+        and deployment as connected parts of one system.
+      </p>
+
+      <p>
+        The biggest shift was moving from “train a model” to building a
+        reproducible prediction workflow that carries the preprocessing,
+        model and decision threshold into deployment.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       18 LIMITATIONS
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        18 · Limitations
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        What this project does not claim
+      </h2>
+
+      <div class="mt-12 grid gap-4 md:grid-cols-2">
+
+        {limitations.map((item) => (
+
+          <div class="rounded-2xl border p-6 dark:border-gray-700">
+            {item}
+          </div>
+
+        ))}
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       19 NEXT ITERATION
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      19 · Next Iteration
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      What I would improve
+    </h2>
+
+    <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+      {improvements.map((item, index) => (
+
+        <div class="rounded-2xl border p-6 dark:border-gray-700">
+
+          <span class="text-sm font-semibold text-accent">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+
+          <p class="mt-4 leading-7">
+            {item}
+          </p>
+
+        </div>
+
+      ))}
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       20 EXPLAIN IT IN 60 SECONDS
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        20 · Explain it in 60 seconds
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        The project in one minute
+      </h2>
+
+      <div class="mt-8 max-w-4xl space-y-6 text-lg leading-8 text-muted">
+
+        <p>
+          Basically, I built an end-to-end fraud detection system using more
+          than 6.3 million financial transactions.
+        </p>
+
+        <p>
+          I started by exploring the severe class imbalance, transaction
+          amounts, transaction types, timing patterns and numerical
+          relationships.
+        </p>
+
+        <p>
+          Then I engineered features around transaction amount, timing,
+          account-balance movement and balance consistency.
+        </p>
+
+        <p>
+          I compared Logistic Regression, Random Forest and XGBoost and
+          selected XGBoost for the final workflow.
+        </p>
+
+        <p>
+          Instead of treating the default probability threshold as fixed, I
+          evaluated the precision-recall trade-off and selected a threshold
+          through the project's recall-constrained search.
+        </p>
+
+        <p>
+          I then used SHAP to inspect how the trained model behaves and
+          validated the tuned XGBoost model using five-fold stratified
+          cross-validation with Average Precision.
+        </p>
+
+        <p>
+          Finally, I saved the model, threshold, feature order and scaler as
+          one artifact and connected that artifact to both Streamlit and
+          FastAPI.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       PROJECT CTA
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <div class="rounded-3xl border p-8 dark:border-gray-700 lg:p-12">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        Project Links
+      </p>
+
+      <h2 class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+        Explore the project
+      </h2>
+
+      <p class="mt-5 max-w-2xl text-lg leading-8 text-muted">
+        Explore the source code, test the deployed application or return to
+        the complete portfolio.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-4">
+
+        <a
+          href="https://github.com/iampradeeploganathan/fraud-detection-system"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary"
+        >
+          GitHub ↗
+        </a>
+
+        <a
+          href="https://fraud-detection-pradeep.streamlit.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary"
+        >
+          Live App ↗
+        </a>
+
+        <a
+          href="/#projects"
+          class="btn"
+        >
+          ← Back to projects
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       CONTACT
+  ====================================================== -->
+
+  <section class="border-t border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        Contact
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Let's connect.
+      </h2>
+
+      <p class="mt-6 max-w-2xl text-lg leading-8 text-muted">
+        Interested in data science, machine learning, analytics or
+        collaborating on a project?
+      </p>
+
+      <div class="mt-10 grid gap-4 md:grid-cols-3">
+
+        <a
+          href="https://www.linkedin.com/in/YOUR-LINKEDIN-USERNAME/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="rounded-2xl border p-6 transition hover:-translate-y-1 hover:border-accent dark:border-gray-700"
+        >
+
+          <span class="text-sm font-bold text-accent">
+            in
+          </span>
+
+          <h3 class="mt-4 font-bold">
+            LinkedIn
+          </h3>
+
+          <p class="mt-2 text-sm text-muted">
+            Connect with me
+          </p>
+
+        </a>
+
+
+        <a
+          href="mailto:YOUR-EMAIL@example.com"
+          class="rounded-2xl border p-6 transition hover:-translate-y-1 hover:border-accent dark:border-gray-700"
+        >
+
+          <span class="text-sm font-bold text-accent">
+            @
+          </span>
+
+          <h3 class="mt-4 font-bold">
+            Email
+          </h3>
+
+          <p class="mt-2 text-sm text-muted">
+            Send me an email
+          </p>
+
+        </a>
+
+
+        <a
+          href="https://github.com/YOUR-GITHUB-USERNAME"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="rounded-2xl border p-6 transition hover:-translate-y-1 hover:border-accent dark:border-gray-700"
+        >
+
+          <span class="text-sm font-bold text-accent">
+            GH
+          </span>
+
+          <h3 class="mt-4 font-bold">
+            GitHub
+          </h3>
+
+          <p class="mt-2 text-sm text-muted">
+            View my projects
+          </p>
+
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</Layout>

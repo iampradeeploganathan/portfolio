@@ -1,0 +1,1174 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+const metadata = {
+  title: 'Chennai Bus Stop Audit 2026 — Pradeep Loganathan',
+  description:
+    'A deep analysis of 210 Chennai bus stops focused on accessibility, pedestrian movement, shelter infrastructure, safety, amenities and passenger information.',
+  ignoreTitleTemplate: true,
+};
+
+const accessibilityFindings = [
+  {
+    value: '0.0%',
+    label: 'Meet all accessibility criteria',
+    detail: '0 of 210 audited stops',
+  },
+  {
+    value: '15.2%',
+    label: 'Have a wheelchair ramp',
+    detail: '32 stops',
+  },
+  {
+    value: '9.5%',
+    label: 'Have a usable ramp',
+    detail: '20 stops',
+  },
+  {
+    value: '95.2%',
+    label: 'Lack tactile paving',
+    detail: '200 stops',
+  },
+];
+
+const pedestrianFindings = [
+  {
+    value: '68.6%',
+    label: 'Have footpath encroachments',
+    detail: '144 stops',
+  },
+  {
+    value: '73.8%',
+    label: 'Force users onto the road',
+    detail: 'Pedestrian / wheelchair movement',
+  },
+  {
+    value: '27.1%',
+    label: 'Show drainage problems',
+    detail: 'Standing water / waterlogging',
+  },
+];
+
+const shelterFindings = [
+  {
+    value: '48.1%',
+    label: 'Have insufficient shade',
+    detail: '101 stops',
+  },
+  {
+    value: '40.0%',
+    label: 'Have damaged or inadequate roofs',
+    detail: '10.5% damaged + 29.5% inadequate',
+  },
+  {
+    value: '34.8%',
+    label: 'Have capacity problems',
+    detail: '73 stops',
+  },
+];
+
+const informationFindings = [
+  {
+    value: '34.8%',
+    label: 'Have no route information',
+    detail: 'No route information displayed',
+  },
+  {
+    value: '27.6%',
+    label: 'Lack visible stop names',
+    detail: 'Passenger wayfinding issue',
+  },
+  {
+    value: '17.6%',
+    label: 'Have real-time displays',
+    detail: 'Digital arrival information',
+  },
+];
+
+const amenityFindings = [
+  {
+    value: '79.5%',
+    label: 'Have seating / benches',
+  },
+  {
+    value: '33.3%',
+    label: 'Have dustbins',
+  },
+  {
+    value: '4.3%',
+    label: 'Have drinking water',
+  },
+  {
+    value: '2.4%',
+    label: 'Have CCTV cameras',
+  },
+  {
+    value: '1.4%',
+    label: 'Have nearby public toilets',
+  },
+];
+
+const safetyFindings = [
+  {
+    value: '51.5%',
+    label: 'Feel unsafe or somewhat unsafe at night',
+  },
+  {
+    value: '32.8%',
+    label: 'Lack sufficient dedicated lighting',
+  },
+  {
+    value: '27.1%',
+    label: 'Have drainage / waterlogging issues',
+  },
+];
+
+const highPriorityStops = [
+  'MKB POLICE STATION',
+  'Brindha theater',
+  'Brindha theatre moolakadai',
+  'Fire station Bus stand Vysarpadi',
+  'ஆடுத்தொட்டி',
+  'கணேசபுரம்',
+  'Massodhi',
+  'ரயில்வே காலனி',
+  'நாய் கோட்ரஸ்',
+  'Meersahipet Market',
+  'Kumaran Nagar Semmencheri',
+  'Semmencheri Aazhamaram',
+  'M.P. தேவதாஸ் உயர்நிலைப்பள்ளி',
+  'Vadivudaiamman Kovil Perambur',
+  'Ottiyambakkam Main Road towards Medavakkam',
+  'Semmencheri Aazhamaram (Stop 2)',
+  'Todd hunder nagar / Veterinary hospital',
+];
+
+const analysisAreas = [
+  {
+    number: '01',
+    title: 'Accessibility',
+    detail:
+      'Wheelchair ramps, usable ramps, tactile paving and continuous movement around the shelter.',
+  },
+  {
+    number: '02',
+    title: 'Pedestrian environment',
+    detail:
+      'Footpath encroachments, waterlogging and the ability to move around the bus stop without entering the road.',
+  },
+  {
+    number: '03',
+    title: 'Shelter infrastructure',
+    detail:
+      'Waiting capacity, roof condition and shade availability.',
+  },
+  {
+    number: '04',
+    title: 'Safety',
+    detail:
+      'Night-time safety perception and dedicated lighting.',
+  },
+  {
+    number: '05',
+    title: 'Passenger information',
+    detail:
+      'Stop naming, route information and real-time arrival displays.',
+  },
+  {
+    number: '06',
+    title: 'Public amenities',
+    detail:
+      'Seating, dustbins, drinking water, CCTV and nearby public toilets.',
+  },
+];
+
+const recommendations = [
+  {
+    number: '01',
+    title: 'Accessibility modernization',
+    detail:
+      'Retrofit footpaths around bus shelters to ensure a continuous 1.5m obstacle-free path for wheelchairs and pedestrians, alongside standardized usable ramps and tactile paving.',
+  },
+  {
+    number: '02',
+    title: 'Shelter roof and size upgrades',
+    detail:
+      'Prioritize roof repair and footprint extension at the 17 high-priority locations to reduce passenger overflow onto active roads during peak hours and rain.',
+  },
+  {
+    number: '03',
+    title: 'Wayfinding and passenger signage',
+    detail:
+      'Mandate standardized stop naming, route maps and digital arrival displays to improve transit navigation.',
+  },
+  {
+    number: '04',
+    title: 'Safety and hygiene',
+    detail:
+      'Install dedicated shelter lighting and waste bins to improve nighttime safety and cleanliness.',
+  },
+];
+---
+
+<Layout metadata={metadata}>
+
+  <!-- =====================================================
+       HERO
+  ====================================================== -->
+
+  <section class="relative overflow-hidden">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
+
+      <div class="max-w-5xl">
+
+        <a
+          href="/#projects"
+          class="text-sm font-semibold text-accent transition-opacity hover:opacity-70"
+        >
+          ← Back to projects
+        </a>
+        <a
+          href="https://github.com/iampradeeploganathan/chennai-bus-stop-audit"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent transition-opacity hover:opacity-70"
+        >
+          View project on GitHub →
+        </a>
+
+        <p class="mt-10 text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+          Deep Dive · Urban Data · Accessibility
+        </p>
+
+        <h1 class="mt-4 text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
+          Chennai Bus Stop Audit
+        </h1>
+
+        <p class="mt-8 max-w-4xl text-xl leading-8 text-muted">
+          An analysis of 210 Chennai bus stops focused on pedestrian and
+          wheelchair accessibility, shelter infrastructure, safety,
+          passenger information and basic public amenities.
+        </p>
+
+        <div class="mt-10 flex flex-wrap gap-4">
+
+          <a
+            href="/#projects"
+            class="btn btn-primary"
+          >
+            ← All Projects
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       PROJECT SNAPSHOT
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Stops audited
+          </p>
+
+          <p class="mt-2 text-4xl font-bold">
+            210
+          </p>
+
+          <p class="mt-2 text-sm text-muted">
+            Chennai locations
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Universal accessibility
+          </p>
+
+          <p class="mt-2 text-4xl font-bold">
+            0.0%
+          </p>
+
+          <p class="mt-2 text-sm text-muted">
+            Meet all criteria
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border-2 border-accent/30 p-7 dark:border-accent/30">
+
+          <p class="text-sm text-accent">
+            Accessibility deficit
+          </p>
+
+          <p class="mt-2 text-4xl font-bold">
+            73.8%
+          </p>
+
+          <p class="mt-2 text-sm text-muted">
+            Forced onto active road
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-sm text-muted">
+            Priority locations
+          </p>
+
+          <p class="mt-2 text-4xl font-bold">
+            17
+          </p>
+
+          <p class="mt-2 text-sm text-muted">
+            Compound infrastructure failures
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       01 EXECUTIVE SUMMARY
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      01 · Executive Summary
+    </p>
+
+    <h2 class="mt-3 max-w-5xl text-4xl font-bold tracking-tight sm:text-5xl">
+      Accessibility is not a single feature. It is a connected system.
+    </h2>
+
+    <div class="mt-8 max-w-4xl space-y-6 text-lg leading-8 text-muted">
+
+      <p>
+        I analysed an audit of <strong class="text-current">210 bus stops</strong>
+        across Chennai to understand the physical conditions experienced by
+        pedestrians, wheelchair users and public-transport passengers.
+      </p>
+
+      <p>
+        The analysis examined universal accessibility, pedestrian movement,
+        shelter infrastructure, safety, passenger information and basic
+        amenities.
+      </p>
+
+      <p>
+        The most significant finding is that
+        <strong class="text-current">0 of the 210 audited stops</strong>
+        met all of the accessibility criteria evaluated in the project.
+      </p>
+
+      <p>
+        Accessibility problems were not isolated to ramps. Footpath
+        encroachments, missing tactile paving, inadequate clearance,
+        waterlogging and shelter design combined to create barriers around
+        the bus-stop environment.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       02 ANALYSIS FRAMEWORK
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        02 · Analysis Framework
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        What the audit was used to measure
+      </h2>
+
+      <div class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+
+        {analysisAreas.map((area) => (
+
+          <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+            <span class="text-sm font-semibold text-accent">
+              {area.number}
+            </span>
+
+            <h3 class="mt-4 text-xl font-bold">
+              {area.title}
+            </h3>
+
+            <p class="mt-4 leading-7 text-muted">
+              {area.detail}
+            </p>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       03 ACCESSIBILITY
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      03 · Accessibility
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      Universal accessibility remains the biggest gap
+    </h2>
+
+    <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+      The audit evaluated several accessibility conditions together rather
+      than treating the presence of a single ramp as sufficient.
+    </p>
+
+    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
+      {accessibilityFindings.map((finding) => (
+
+        <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+          <p class="text-4xl font-bold">
+            {finding.value}
+          </p>
+
+          <h3 class="mt-4 font-bold">
+            {finding.label}
+          </h3>
+
+          <p class="mt-2 text-sm leading-6 text-muted">
+            {finding.detail}
+          </p>
+
+        </div>
+
+      ))}
+
+    </div>
+
+    <div class="mt-10 rounded-2xl border-2 border-accent/30 p-8 dark:border-accent/30">
+
+      <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+        Key finding
+      </p>
+
+      <p class="mt-4 max-w-4xl text-xl leading-8">
+        Exactly <strong>0 bus stops (0.0%)</strong> met all standard
+        accessibility criteria evaluated in the analysis: usable ramps,
+        continuous and unencroached footpaths, tactile paving, and
+        unobstructed clearance behind or in front of the shelter.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       04 PEDESTRIAN ENVIRONMENT
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        04 · Pedestrian Environment
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        The bus stop does not end at the shelter.
+      </h2>
+
+      <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+        A bus stop can have a shelter and still be inaccessible if the path
+        leading to and around it is obstructed or forces users into active
+        traffic.
+      </p>
+
+      <div class="mt-12 grid gap-5 md:grid-cols-3">
+
+        {pedestrianFindings.map((finding) => (
+
+          <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+            <p class="text-5xl font-bold">
+              {finding.value}
+            </p>
+
+            <h3 class="mt-5 text-xl font-bold">
+              {finding.label}
+            </h3>
+
+            <p class="mt-3 text-muted">
+              {finding.detail}
+            </p>
+
+          </div>
+
+        ))}
+
+      </div>
+
+      <div class="mt-10 rounded-2xl border p-8 dark:border-gray-700">
+
+        <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+          Why the 73.8% finding matters
+        </p>
+
+        <p class="mt-4 max-w-4xl text-lg leading-8">
+          Exactly <strong>155 of 210 stops</strong> were reported as forcing
+          pedestrians or wheelchair users to step onto the road to move past
+          the bus stop. This makes accessibility a pedestrian-network issue,
+          not simply a shelter-design issue.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       05 SHELTER INFRASTRUCTURE
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      05 · Shelter & Waiting Infrastructure
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      Protection from sun and rain is still inconsistent
+    </h2>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+
+      {shelterFindings.map((finding) => (
+
+        <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+          <p class="text-5xl font-bold">
+            {finding.value}
+          </p>
+
+          <h3 class="mt-5 text-xl font-bold">
+            {finding.label}
+          </h3>
+
+          <p class="mt-3 text-muted">
+            {finding.detail}
+          </p>
+
+        </div>
+
+      ))}
+
+    </div>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+        <p class="text-sm text-muted">
+          Shade
+        </p>
+
+        <p class="mt-2 text-3xl font-bold">
+          101 stops
+        </p>
+
+        <p class="mt-3 leading-7 text-muted">
+          Provide insufficient shade or expose commuters to full sun.
+        </p>
+
+      </div>
+
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+        <p class="text-sm text-muted">
+          Roof
+        </p>
+
+        <p class="mt-2 text-3xl font-bold">
+          40.0%
+        </p>
+
+        <p class="mt-3 leading-7 text-muted">
+          Have roofs that are damaged or inadequate.
+        </p>
+
+      </div>
+
+
+      <div class="rounded-2xl border p-7 dark:border-gray-700">
+
+        <p class="text-sm text-muted">
+          Waiting capacity
+        </p>
+
+        <p class="mt-2 text-3xl font-bold">
+          73 stops
+        </p>
+
+        <p class="mt-3 leading-7 text-muted">
+          Are overcrowded or force passengers to wait near the road edge.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       06 PASSENGER INFORMATION
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        06 · Passenger Information
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Finding the right bus should not require guesswork
+      </h2>
+
+      <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+        Passenger information was analysed through stop naming, route
+        information and digital real-time arrival displays.
+      </p>
+
+      <div class="mt-12 grid gap-5 md:grid-cols-3">
+
+        {informationFindings.map((finding) => (
+
+          <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+            <p class="text-5xl font-bold">
+              {finding.value}
+            </p>
+
+            <h3 class="mt-5 text-xl font-bold">
+              {finding.label}
+            </h3>
+
+            <p class="mt-3 text-muted">
+              {finding.detail}
+            </p>
+
+          </div>
+
+        ))}
+
+      </div>
+
+      <div class="mt-10 rounded-2xl border p-8 dark:border-gray-700">
+
+        <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+          Information gap
+        </p>
+
+        <p class="mt-4 max-w-4xl text-lg leading-8">
+          Only <strong>17.6%</strong> of audited stops had digital real-time
+          arrival displays, while <strong>34.8%</strong> had no route
+          information displayed and <strong>27.6%</strong> lacked visible
+          bus-stop name signs.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       07 SAFETY
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      07 · Safety & Drainage
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      Safety extends beyond traffic movement
+    </h2>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+
+      {safetyFindings.map((finding) => (
+
+        <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+          <p class="text-5xl font-bold">
+            {finding.value}
+          </p>
+
+          <h3 class="mt-5 text-xl font-bold">
+            {finding.label}
+          </h3>
+
+        </div>
+
+      ))}
+
+    </div>
+
+    <div class="mt-10 rounded-2xl border border-accent/30 p-8 dark:border-accent/30">
+
+      <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+        Combined problem
+      </p>
+
+      <p class="mt-4 max-w-4xl text-lg leading-8">
+        The audit connects pedestrian movement, nighttime safety and drainage
+        conditions. A stop with poor lighting or waterlogging can become
+        significantly harder to navigate, particularly for passengers who
+        already face mobility barriers.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       08 AMENITIES
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        08 · Public Amenities
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Basic passenger amenities remain uneven
+      </h2>
+
+      <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+
+        {amenityFindings.map((finding) => (
+
+          <div class="rounded-2xl border p-6 dark:border-gray-700">
+
+            <p class="text-3xl font-bold">
+              {finding.value}
+            </p>
+
+            <p class="mt-3 text-sm font-semibold">
+              {finding.label}
+            </p>
+
+          </div>
+
+        ))}
+
+      </div>
+
+      <div class="mt-10 max-w-4xl text-lg leading-8 text-muted">
+
+        <p>
+          Seating was relatively common at <strong class="text-current">79.5%</strong>
+          of audited stops, but other basic utilities were much less common:
+          dustbins were present at <strong class="text-current">33.3%</strong>,
+          drinking water at <strong class="text-current">4.3%</strong>,
+          CCTV cameras at <strong class="text-current">2.4%</strong> and
+          nearby public toilets at only <strong class="text-current">1.4%</strong>.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       09 HIGH PRIORITY STOPS
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      09 · Priority Analysis
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      17 stops showed compound infrastructure failures
+    </h2>
+
+    <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+      The analysis identified 17 high-priority locations experiencing
+      compound failures involving severe roof damage together with severe
+      shade and/or waiting-capacity deficits.
+    </p>
+
+    <div class="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+
+      {highPriorityStops.map((stop, index) => (
+
+        <div class="rounded-2xl border p-6 dark:border-gray-700">
+
+          <span class="text-sm font-semibold text-accent">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+
+          <p class="mt-4 font-semibold leading-6">
+            {stop}
+          </p>
+
+        </div>
+
+      ))}
+
+    </div>
+
+    <div class="mt-10 rounded-2xl border border-accent/30 p-8 dark:border-accent/30">
+
+      <p class="text-sm font-semibold uppercase tracking-wider text-accent">
+        Why compound failures matter
+      </p>
+
+      <p class="mt-4 max-w-4xl text-lg leading-8">
+        Prioritizing stops based on combinations of infrastructure problems
+        makes the analysis more actionable than ranking locations by a single
+        isolated defect.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       10 KEY INSIGHT
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        10 · Key Insight
+      </p>
+
+      <h2 class="mt-3 max-w-5xl text-4xl font-bold tracking-tight sm:text-5xl">
+        Accessibility failure is systemic, not isolated.
+      </h2>
+
+      <div class="mt-10 grid gap-5 md:grid-cols-3">
+
+        <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+          <p class="text-4xl font-bold">
+            15.2%
+          </p>
+
+          <p class="mt-4 leading-7 text-muted">
+            of stops have a wheelchair ramp.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+          <p class="text-4xl font-bold">
+            95.2%
+          </p>
+
+          <p class="mt-4 leading-7 text-muted">
+            lack tactile paving.
+          </p>
+
+        </div>
+
+
+        <div class="rounded-2xl border-2 border-accent/30 p-8 dark:border-accent/30">
+
+          <p class="text-4xl font-bold">
+            73.8%
+          </p>
+
+          <p class="mt-4 leading-7 text-muted">
+            force pedestrian or wheelchair users onto the road to bypass the
+            bus stop.
+          </p>
+
+        </div>
+
+      </div>
+
+      <p class="mt-10 max-w-4xl text-xl leading-9">
+        The evidence suggests that adding individual accessibility features
+        without fixing the surrounding pedestrian environment would not
+        create genuinely accessible bus stops.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       11 RECOMMENDATIONS
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+      11 · Recommendations
+    </p>
+
+    <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+      Turning audit findings into interventions
+    </h2>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-2">
+
+      {recommendations.map((recommendation) => (
+
+        <div class="rounded-2xl border p-8 dark:border-gray-700">
+
+          <span class="text-sm font-semibold text-accent">
+            {recommendation.number}
+          </span>
+
+          <h3 class="mt-4 text-2xl font-bold">
+            {recommendation.title}
+          </h3>
+
+          <p class="mt-4 leading-7 text-muted">
+            {recommendation.detail}
+          </p>
+
+        </div>
+
+      ))}
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       12 WHAT I LEARNED
+  ====================================================== -->
+
+  <section class="border-y border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        12 · What I Learned
+      </p>
+
+      <h2 class="mt-3 max-w-5xl text-4xl font-bold tracking-tight sm:text-5xl">
+        Good urban-data analysis should lead to decisions.
+      </h2>
+
+      <div class="mt-10 max-w-4xl space-y-6 text-lg leading-8 text-muted">
+
+        <p>
+          This analysis showed me that urban data becomes more useful when
+          individual survey questions are grouped into meaningful systems:
+          accessibility, pedestrian movement, safety, shelter and passenger
+          information.
+        </p>
+
+        <p>
+          I also learned that a strong finding is not necessarily the largest
+          percentage. The most useful findings are those that reveal a
+          practical problem and can be connected to a specific intervention.
+        </p>
+
+        <p>
+          The 17 high-priority stops are an example of this approach: multiple
+          infrastructure problems were combined to identify locations that
+          deserve focused intervention.
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       13 PROJECT TAKEAWAY
+  ====================================================== -->
+
+  <section class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+    <div class="rounded-3xl border p-8 dark:border-gray-700 lg:p-12">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        Project Takeaway
+      </p>
+
+      <h2 class="mt-4 max-w-5xl text-3xl font-bold tracking-tight sm:text-4xl">
+        A bus stop is only accessible when the entire journey around it is
+        accessible.
+      </h2>
+
+      <p class="mt-6 max-w-4xl text-lg leading-8 text-muted">
+        The audit of 210 Chennai bus stops reveals that accessibility depends
+        on more than ramps. Footpath continuity, tactile paving, shelter
+        clearance, drainage, lighting, information and waiting infrastructure
+        all contribute to the passenger experience.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       CONTACT
+  ====================================================== -->
+
+  <section class="border-t border-gray-200 dark:border-gray-700">
+
+    <div class="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+
+      <p class="text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        Contact
+      </p>
+
+      <h2 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">
+        Let's connect.
+      </h2>
+
+      <p class="mt-6 max-w-2xl text-lg leading-8 text-muted">
+        Interested in urban data, accessibility, data science or
+        collaborating on a project?
+      </p>
+
+      <div class="mt-10 grid gap-4 md:grid-cols-3">
+
+        <a
+          href="https://www.linkedin.com/in/pradeep-loganathan-data-scientist"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="rounded-2xl border p-6 transition hover:-translate-y-1 hover:border-accent dark:border-gray-700"
+        >
+
+          <span class="text-sm font-bold text-accent">
+            in
+          </span>
+
+          <h3 class="mt-4 font-bold">
+            LinkedIn
+          </h3>
+
+          <p class="mt-2 text-sm text-muted">
+            Connect with me
+          </p>
+
+        </a>
+
+
+        <a
+          href="mailto:pradeeploganthan@gmail.com"
+          class="rounded-2xl border p-6 transition hover:-translate-y-1 hover:border-accent dark:border-gray-700"
+        >
+
+          <span class="text-sm font-bold text-accent">
+            @
+          </span>
+
+          <h3 class="mt-4 font-bold">
+            Email
+          </h3>
+
+          <p class="mt-2 text-sm text-muted">
+            Send me an email
+          </p>
+
+        </a>
+
+
+        <a
+          href="https://github.com/iampradeeploganathan"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="rounded-2xl border p-6 transition hover:-translate-y-1 hover:border-accent dark:border-gray-700"
+        >
+
+          <span class="text-sm font-bold text-accent">
+            GH
+          </span>
+
+          <h3 class="mt-4 font-bold">
+            GitHub
+          </h3>
+
+          <p class="mt-2 text-sm text-muted">
+            View my projects
+          </p>
+
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+</Layout>
